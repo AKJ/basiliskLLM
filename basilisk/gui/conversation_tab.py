@@ -219,6 +219,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 		sizer.Add(self.top_p_spinner, proportion=0, flag=wx.EXPAND)
 		self.create_stream_widget()
 		sizer.Add(self.stream_mode, proportion=0, flag=wx.EXPAND)
+		sizer.Add(self.web_search_enabled, proportion=0, flag=wx.EXPAND)
 
 		btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -580,6 +581,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 			top_p=self.top_p_spinner.GetValue(),
 			max_tokens=self.max_tokens_spin_ctrl.GetValue(),
 			stream=self.stream_mode.GetValue(),
+			web_search_enabled=self.web_search_enabled.GetValue(),
 		)
 
 	def get_completion_args(self) -> dict[str, Any] | None:

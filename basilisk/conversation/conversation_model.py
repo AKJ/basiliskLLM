@@ -129,6 +129,7 @@ class MessageBlock(BaseModel):
 	max_tokens: int = Field(default=4096)
 	top_p: float = Field(default=1)
 	stream: bool = Field(default=False)
+	web_search_enabled: bool = Field(default=False)
 	created_at: datetime = Field(default_factory=datetime.now)
 	updated_at: datetime = Field(default_factory=datetime.now)
 

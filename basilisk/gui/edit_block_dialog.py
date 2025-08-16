@@ -204,6 +204,13 @@ class EditBlockDialog(wx.Dialog, BaseConversation):
 			flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP,
 			border=10,
 		)
+		self.create_web_search_widget()
+		sizer.Add(
+			self.web_search_enabled,
+			proportion=0,
+			flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP,
+			border=10,
+		)
 
 		btn_sizer = wx.StdDialogButtonSizer()
 
@@ -283,6 +290,7 @@ class EditBlockDialog(wx.Dialog, BaseConversation):
 		self.max_tokens_spin_ctrl.SetValue(self.block.max_tokens)
 		self.top_p_spinner.SetValue(self.block.top_p)
 		self.stream_mode.SetValue(self.block.stream)
+		self.web_search_enabled.SetValue(self.block.web_search_enabled)
 
 	def on_account_change(self, event):
 		"""Handle account selection changes.
@@ -343,6 +351,7 @@ class EditBlockDialog(wx.Dialog, BaseConversation):
 		self.block.max_tokens = self.max_tokens_spin_ctrl.GetValue()
 		self.block.top_p = self.top_p_spinner.GetValue()
 		self.block.stream = self.stream_mode.GetValue()
+		self.block.web_search_enabled = self.web_search_enabled.GetValue()
 
 		# Update response
 		if self.block.response:
@@ -387,6 +396,7 @@ class EditBlockDialog(wx.Dialog, BaseConversation):
 			top_p=self.top_p_spinner.GetValue(),
 			max_tokens=self.max_tokens_spin_ctrl.GetValue(),
 			stream=self.stream_mode.GetValue(),
+			web_search_enabled=self.web_search_enabled.GetValue(),
 		)
 
 		# Get system message if available

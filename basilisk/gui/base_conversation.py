@@ -359,14 +359,6 @@ class BaseConversation:
 		dlg.ShowModal()
 		dlg.Destroy()
 
-	def create_web_search_widget(self):
-		"""Create and configure the web search mode check box."""
-		self.web_search_mode = wx.CheckBox(
-			self,
-			# Translators: This is a label for web search mode in the main window
-			label=_("&Web search mode"),
-		)
-		self.web_search_mode.SetValue(False)
 
 	def create_max_tokens_widget(self) -> wx.StaticText:
 		"""Create and configure the max tokens spin control.
@@ -444,6 +436,15 @@ class BaseConversation:
 		)
 		self.stream_mode.SetValue(True)
 
+	def create_web_search_widget(self):
+		"""Create and configure the web search enabled check box."""
+		self.web_search_enabled = wx.CheckBox(
+			self,
+			# Translators: This is a label for web search mode in the main window
+			label=_("&Web search enabled"),
+		)
+		self.web_search_enabled.SetValue(False)
+
 	def apply_profile(
 		self,
 		profile: Optional[config.ConversationProfile],
@@ -470,6 +471,7 @@ class BaseConversation:
 		if profile.top_p is not None:
 			self.top_p_spinner.SetValue(profile.top_p)
 		self.stream_mode.SetValue(profile.stream_mode)
+		self.web_search_enabled.SetValue(profile.web_search_enabled)
 
 	def adjust_advanced_mode_setting(self):
 		"""Update UI controls visibility based on advanced mode setting."""
@@ -481,6 +483,7 @@ class BaseConversation:
 			self.top_p_spinner_label,
 			self.top_p_spinner,
 			self.stream_mode,
+			self.web_search_enabled,
 		)
 		advanced_mode = config.conf().general.advanced_mode
 		for control in controls:

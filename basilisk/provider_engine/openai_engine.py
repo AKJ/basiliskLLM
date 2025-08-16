@@ -124,6 +124,7 @@ class OpenAIEngine(BaseEngine):
 				vision=True,
 				max_temperature=2.0,
 				prefer_responses_api=True,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-5-mini",
@@ -137,6 +138,7 @@ class OpenAIEngine(BaseEngine):
 				vision=True,
 				max_temperature=2.0,
 				prefer_responses_api=True,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-5-nano",
@@ -148,6 +150,7 @@ class OpenAIEngine(BaseEngine):
 				vision=True,
 				max_temperature=2.0,
 				prefer_responses_api=True,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-5-chat-latest",
@@ -158,6 +161,7 @@ class OpenAIEngine(BaseEngine):
 				max_output_tokens=128000,
 				vision=True,
 				max_temperature=2.0,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-oss-120b",
@@ -193,6 +197,7 @@ class OpenAIEngine(BaseEngine):
 				vision=True,
 				max_temperature=2.0,
 				prefer_responses_api=True,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-4.1-mini",
@@ -256,6 +261,7 @@ class OpenAIEngine(BaseEngine):
 				max_output_tokens=16384,
 				vision=True,
 				max_temperature=2.0,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="gpt-4o-mini-search-preview",
@@ -266,6 +272,7 @@ class OpenAIEngine(BaseEngine):
 				max_output_tokens=16384,
 				vision=True,
 				max_temperature=2.0,
+				web_search_capable=True,
 			),
 			ProviderAIModel(
 				id="chatgpt-4o-latest",
@@ -670,6 +677,10 @@ class OpenAIEngine(BaseEngine):
 		if model and model.reasoning:
 			params["reasoning"] = {"effort": "medium"}
 
+		# Add web search tool if enabled and supported
+		if new_block.web_search_enabled and model and model.web_search_capable:
+			params["tools"] = [{"type": "web_search_preview"}]
+
 		if new_block.max_tokens:
 			params["max_output_tokens"] = new_block.max_tokens
 
@@ -723,6 +734,45 @@ class OpenAIEngine(BaseEngine):
 								and hasattr(content_item, 'text')
 							):
 								yield content_item.text
+				# Handle web search events
+				elif (
+					chunk.type == 'response.output_item.added'
+					and hasattr(chunk, 'item')
+					and chunk.item
+				):
+					if (
+						hasattr(chunk.item, 'type')
+						and chunk.item.type == 'web_search_call'
+					):
+						# Handle web search status updates
+						status = getattr(chunk.item, 'status', 'unknown')
+						if status == 'searching':
+							yield f"\n🔍 {_('Searching the web...')}\n"
+						elif status == 'completed':
+							query = ''
+							if hasattr(chunk.item, 'action') and hasattr(
+								chunk.item.action, 'query'
+							):
+								query = chunk.item.action.query
+							if query:
+								yield f"\n✅ {_('Web search completed for:')} {query}\n"
+							else:
+								yield f"\n✅ {_('Web search completed')}\n"
+				# Handle direct web search call events
+				elif chunk.type == 'web_search_call':
+					status = getattr(chunk, 'status', 'unknown')
+					if status == 'searching':
+						yield f"\n🔍 {_('Searching the web...')}\n"
+					elif status == 'completed':
+						query = ''
+						if hasattr(chunk, 'action') and hasattr(
+							chunk.action, 'query'
+						):
+							query = chunk.action.query
+						if query:
+							yield f"\n✅ {_('Web search completed for:')} {query}\n"
+						else:
+							yield f"\n✅ {_('Web search completed')}\n"
 				# Handle completion event with final output (fallback when no deltas)
 				elif chunk.type == 'response.completed':
 					# Only yield the complete text if we haven't seen any deltas

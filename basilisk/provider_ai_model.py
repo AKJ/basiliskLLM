@@ -22,6 +22,7 @@ class ProviderAIModel:
 		default_temperature: The default temperature for the AI model.
 		reasoning: Whether the AI model supports reasoning.
 		vision: Whether the AI model supports vision.
+		web_search_capable: Whether the AI model supports web search.
 		extra_info: Additional information for the AI model.
 	"""
 
@@ -35,6 +36,7 @@ class ProviderAIModel:
 	vision: bool = field(default=False)
 	reasoning: bool = field(default=False)
 	prefer_responses_api: bool = field(default=False)
+	web_search_capable: bool = field(default=False)
 	extra_info: dict[str, Any] = field(default_factory=dict)
 
 	@property

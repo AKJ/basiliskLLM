@@ -43,6 +43,7 @@ class ConversationProfile(BaseModel):
 	temperature: Optional[float] = Field(default=None)
 	top_p: Optional[float] = Field(default=None)
 	stream_mode: bool = Field(default=True)
+	web_search_enabled: bool = Field(default=False)
 
 	def __init__(self, **data: Any):
 		"""Initialize a conversation profile with the provided data.

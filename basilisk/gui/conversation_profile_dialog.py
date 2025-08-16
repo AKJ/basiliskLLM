@@ -77,6 +77,8 @@ class EditConversationProfileDialog(wx.Dialog, BaseConversation):
 		self.sizer.Add(self.top_p_spinner, 0, wx.ALL | wx.EXPAND, 5)
 		self.create_stream_widget()
 		self.sizer.Add(self.stream_mode, 0, wx.ALL | wx.EXPAND, 5)
+		self.create_web_search_widget()
+		self.sizer.Add(self.web_search_enabled, 0, wx.ALL | wx.EXPAND, 5)
 		self.ok_button = wx.Button(self, wx.ID_OK)
 		self.cancel_button = wx.Button(self, wx.ID_CANCEL)
 		self.Bind(wx.EVT_BUTTON, self.on_ok, self.ok_button)
@@ -151,6 +153,7 @@ class EditConversationProfileDialog(wx.Dialog, BaseConversation):
 		else:
 			self.profile.top_p = None
 		self.profile.stream_mode = self.stream_mode.GetValue()
+		self.profile.web_search_enabled = self.web_search_enabled.GetValue()
 		ConversationProfile.model_validate(self.profile)
 		self.EndModal(wx.ID_OK)
 
@@ -410,6 +413,10 @@ class ConversationProfileDialog(wx.Dialog):
 		stream_mode_value = _("yes") if profile.stream_mode else _("no")
 		# translators: Summary of a conversation profile
 		summary += _("Stream mode:") + f" {stream_mode_value}\n"
+		# translators: Summary of a conversation profile
+		web_search_value = _("yes") if profile.web_search_enabled else _("no")
+		# translators: Summary of a conversation profile
+		summary += _("Web search:") + f" {web_search_value}\n"
 		if profile.system_prompt:
 			# translators: Summary of a conversation profile
 			summary += _("System prompt:") + f"\n{profile.system_prompt}"
