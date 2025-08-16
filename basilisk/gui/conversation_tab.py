@@ -319,11 +319,14 @@ class ConversationTab(wx.Panel, BaseConversation):
 		self.ocr_button.Enable(
 			ProviderCapability.OCR in account.provider.engine_cls.capabilities
 		)
-		self.web_search_enabled.Enable(
+		has_web_search = (
 			ProviderCapability.WEB_SEARCH
 			in account.provider.engine_cls.capabilities
 		)
+		self.web_search_enabled.Enable(has_web_search)
+		self.web_search_enabled.Show(has_web_search)
 		self.prompt_panel.set_engine(self.current_engine)
+		self.Layout()
 
 	def refresh_accounts(self):
 		"""Update the account selection combo box with current accounts.
@@ -598,7 +601,9 @@ class ConversationTab(wx.Panel, BaseConversation):
 			ProviderCapability.WEB_SEARCH
 			in self.current_account.provider.engine_cls.capabilities
 		):
-			completion_args["web_search_mode"] = self.web_search_enabled.GetValue()
+			completion_args["web_search_mode"] = (
+				self.web_search_enabled.GetValue()
+			)
 
 		return completion_args | {
 			"engine": self.current_engine,

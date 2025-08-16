@@ -620,6 +620,9 @@ class OpenAIEngine(BaseEngine):
 		**kwargs,
 	) -> Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]]:
 		"""Generates completion using chat completions API."""
+		# Remove web_search_mode parameter if present (handled via message block)
+		kwargs.pop("web_search_mode", None)
+		
 		model_id = new_block.model.model_id
 		params = {
 			"model": model_id,
@@ -653,6 +656,9 @@ class OpenAIEngine(BaseEngine):
 		**kwargs,
 	) -> "Response":
 		"""Generates completion using responses API."""
+		# Remove web_search_mode parameter if present (handled via message block)
+		kwargs.pop("web_search_mode", None)
+		
 		if not hasattr(self.client, 'responses'):
 			# Fallback to chat API if responses API not available
 			log.warning("Responses API not available, falling back to chat API")

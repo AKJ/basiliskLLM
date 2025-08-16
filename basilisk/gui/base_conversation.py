@@ -359,7 +359,6 @@ class BaseConversation:
 		dlg.ShowModal()
 		dlg.Destroy()
 
-
 	def create_max_tokens_widget(self) -> wx.StaticText:
 		"""Create and configure the max tokens spin control.
 
@@ -483,7 +482,6 @@ class BaseConversation:
 			self.top_p_spinner_label,
 			self.top_p_spinner,
 			self.stream_mode,
-			self.web_search_enabled,
 		)
 		advanced_mode = config.conf().general.advanced_mode
 		for control in controls:
