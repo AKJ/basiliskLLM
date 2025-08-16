@@ -67,6 +67,7 @@ class OpenAIEngine(BaseEngine):
 		ProviderCapability.TEXT,
 		ProviderCapability.STT,
 		ProviderCapability.TTS,
+		ProviderCapability.WEB_SEARCH,
 	}
 	supported_attachment_formats: set[str] = {
 		"image/gif",

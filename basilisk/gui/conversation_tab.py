@@ -207,7 +207,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 		sizer.Add(label, proportion=0, flag=wx.EXPAND)
 		sizer.Add(self.model_list, proportion=0, flag=wx.ALL | wx.EXPAND)
 		self.create_web_search_widget()
-		sizer.Add(self.web_search_mode, proportion=0, flag=wx.EXPAND)
+		sizer.Add(self.web_search_enabled, proportion=0, flag=wx.EXPAND)
 		self.create_max_tokens_widget()
 		sizer.Add(self.max_tokens_spin_label, proportion=0, flag=wx.EXPAND)
 		sizer.Add(self.max_tokens_spin_ctrl, proportion=0, flag=wx.EXPAND)
@@ -320,7 +320,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 		self.ocr_button.Enable(
 			ProviderCapability.OCR in account.provider.engine_cls.capabilities
 		)
-		self.web_search_mode.Enable(
+		self.web_search_enabled.Enable(
 			ProviderCapability.WEB_SEARCH
 			in account.provider.engine_cls.capabilities
 		)
@@ -599,7 +599,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 			ProviderCapability.WEB_SEARCH
 			in self.current_account.provider.engine_cls.capabilities
 		):
-			completion_args["web_search_mode"] = self.web_search_mode.GetValue()
+			completion_args["web_search_mode"] = self.web_search_enabled.GetValue()
 
 		return completion_args | {
 			"engine": self.current_engine,
@@ -640,7 +640,7 @@ class ConversationTab(wx.Panel, BaseConversation):
 			in self.current_account.provider.engine_cls.capabilities
 		):
 			completion_kwargs["web_search_mode"] = (
-				self.web_search_mode.GetValue()
+				self.web_search_enabled.GetValue()
 			)
 
 		# Start completion using the handler
