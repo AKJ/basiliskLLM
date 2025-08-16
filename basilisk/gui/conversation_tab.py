@@ -219,7 +219,6 @@ class ConversationTab(wx.Panel, BaseConversation):
 		sizer.Add(self.top_p_spinner, proportion=0, flag=wx.EXPAND)
 		self.create_stream_widget()
 		sizer.Add(self.stream_mode, proportion=0, flag=wx.EXPAND)
-		sizer.Add(self.web_search_enabled, proportion=0, flag=wx.EXPAND)
 
 		btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
