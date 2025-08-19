@@ -54,40 +54,115 @@ class MainApp(wx.App):
 			Various potential exceptions during initialization of components like sound manager,
 			file watcher, server thread, or update thread
 		"""
-		sys.excepthook = logging_uncaught_exceptions
-		self.conf = config.conf()
-		log_level = (
-			global_vars.args.log_level or self.conf.general.log_level.name
-		)
-		log.debug("args: %s", global_vars.args)
-		setup_logging(log_level)
-		log.debug("config: %s", self.conf)
+		# Early debug logging - write to a file that will persist
+		debug_file = None
 		if getattr(sys, "frozen", False):
-			log.info(
-				"running frozen application: redirecting stdio to log file"
+			try:
+				import tempfile
+				debug_file = open(tempfile.gettempdir() + "/basilisk_oninit_debug.txt", "w")
+				debug_file.write("OnInit called\n")
+				debug_file.flush()
+			except Exception:
+				pass
+
+		try:
+			if debug_file:
+				debug_file.write("Setting exception hook\n")
+				debug_file.flush()
+			sys.excepthook = logging_uncaught_exceptions
+			
+			if debug_file:
+				debug_file.write("Loading config\n")
+				debug_file.flush()
+			self.conf = config.conf()
+			
+			if debug_file:
+				debug_file.write("Setting up logging\n")
+				debug_file.flush()
+			log_level = (
+				global_vars.args.log_level or self.conf.general.log_level.name
 			)
-			self.RedirectStdio(str(get_log_file_path()))
-		language = global_vars.args.language or self.conf.general.language
-		self.locale = init_translation(language)
-		log.info("translation initialized")
-		initialize_sound_manager()
-		log.info("sound manager initialized")
-		self.init_main_frame()
-		log.info("main frame initialized")
-		self.init_system_cert_store()
-		self.init_ipc()
-		self.server = None
-		if self.conf.server.enable:
-			self.server = ServerThread(self.frame, self.conf.server.port)
-			self.server.start()
-		self.auto_update = None
-		if (
-			self.conf.general.automatic_update_mode
-			!= config.AutomaticUpdateModeEnum.OFF
-		):
-			self.start_auto_update_thread()
-		log.info("Application started")
-		return True
+			log.debug("args: %s", global_vars.args)
+			setup_logging(log_level)
+			log.debug("config: %s", self.conf)
+			
+			if getattr(sys, "frozen", False):
+				log.info(
+					"running frozen application: redirecting stdio to log file"
+				)
+				self.RedirectStdio(str(get_log_file_path()))
+			
+			if debug_file:
+				debug_file.write("Initializing translation\n")
+				debug_file.flush()
+			language = global_vars.args.language or self.conf.general.language
+			self.locale = init_translation(language)
+			log.info("translation initialized")
+			
+			if debug_file:
+				debug_file.write("Initializing sound manager\n")
+				debug_file.flush()
+			initialize_sound_manager()
+			log.info("sound manager initialized")
+			
+			if debug_file:
+				debug_file.write("Initializing main frame\n")
+				debug_file.flush()
+			self.init_main_frame()
+			log.info("main frame initialized")
+			
+			if debug_file:
+				debug_file.write("Initializing system cert store\n")
+				debug_file.flush()
+			self.init_system_cert_store()
+			
+			if debug_file:
+				debug_file.write("Initializing IPC\n")
+				debug_file.flush()
+			self.init_ipc()
+			
+			self.server = None
+			if self.conf.server.enable:
+				if debug_file:
+					debug_file.write("Starting server thread\n")
+					debug_file.flush()
+				self.server = ServerThread(self.frame, self.conf.server.port)
+				self.server.start()
+			
+			self.auto_update = None
+			if (
+				self.conf.general.automatic_update_mode
+				!= config.AutomaticUpdateModeEnum.OFF
+			):
+				if debug_file:
+					debug_file.write("Starting auto update thread\n")
+					debug_file.flush()
+				self.start_auto_update_thread()
+			
+			log.info("Application started")
+			if debug_file:
+				debug_file.write("OnInit completed successfully\n")
+				debug_file.flush()
+			return True
+		except Exception as e:
+			if debug_file:
+				debug_file.write(f"OnInit failed with exception: {e}\n")
+				debug_file.write(f"Exception type: {type(e)}\n")
+				import traceback
+				debug_file.write(f"Traceback: {traceback.format_exc()}\n")
+				debug_file.flush()
+			# Try to log the error if logging is set up
+			try:
+				log.error("OnInit failed: %s", e, exc_info=True)
+			except Exception:
+				pass
+			return False
+		finally:
+			if debug_file:
+				try:
+					debug_file.close()
+				except Exception:
+					pass
 
 	def init_main_frame(self):
 		"""Initializes the main application frame.
